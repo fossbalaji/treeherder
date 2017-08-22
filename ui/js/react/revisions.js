@@ -1,6 +1,6 @@
-'use strict';
+import PropTypes from 'prop-types';
 
-const moreRevisionsLinkComponent = (props) => React.DOM.li(
+const moreRevisionsLinkComponent = props => React.DOM.li(
     null,
     React.DOM.a(
         {
@@ -85,7 +85,7 @@ var revisionListComponent = (props) => {
         { className: 'revision-list col-5' },
         React.DOM.ul(
             { className: 'list-unstyled' },
-            props.resultset.revisions.map((revision) =>
+            props.resultset.revisions.map(revision =>
                 revisionItemComponent({
                     revision,
                     $injector: props.$injector,
@@ -97,7 +97,7 @@ var revisionListComponent = (props) => {
     );
 };
 revisionListComponent.propTypes = {
-    resultset: React.PropTypes.object.isRequired,
-    repo: React.PropTypes.object.isRequired,
-    $injector: React.PropTypes.object.isRequired,
+    resultset: PropTypes.object.isRequired,
+    repo: PropTypes.object.isRequired,
+    $injector: PropTypes.object.isRequired,
 };

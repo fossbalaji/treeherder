@@ -106,7 +106,7 @@ class JobDataComponent extends React.PureComponent {
                             $injector: this.props.$injector
                         });
                     }
-                    return group.jobs.map((job) => jobButtonComponentFactory({
+                    return group.jobs.map(job => jobButtonComponentFactory({
                         job,
                         ref: i,
                         refOrder: i,
@@ -290,7 +290,7 @@ class JobTableComponent extends React.Component {
         if (!selectedPlatform) return;
         var index = selectedPlatform.props.refOrder;
         index = direction === 'next' ? index + 1 : index - 1;
-        var targetPlatform = _.find(this.refs, (component) => component.props.refOrder === index);
+        var targetPlatform = _.find(this.refs, component => component.props.refOrder === index);
         if (direction === 'next') targetPlatform.refs.data.selectFirstVisibleJob();
         else targetPlatform.refs.data.selectLastVisibleJob();
     }

@@ -67,7 +67,7 @@ class JobGroupComponent extends React.Component {
     changeJobSelection(e, direction) {
         // Ignore job change event if this group has no visible jobs
         if (_.isEmpty(this.refs)) return;
-        var selectedButton = _.find(this.refs, (component) =>
+        var selectedButton = _.find(this.refs, component =>
             component.props.job.id === e.targetScope.selectedJob.id);
         if (!selectedButton) return;
         var index = selectedButton.props.refOrder;
@@ -150,7 +150,7 @@ class JobGroupComponent extends React.Component {
             hasGroup: true,
             $injector: this.props.$injector
         }));
-        var counts = items.counts.map((countInfo) => jobCountComponent({
+        var counts = items.counts.map(countInfo => jobCountComponent({
             $injector: this.props.$injector,
             count: countInfo.count,
             onClick: this.toggleExpanded,
