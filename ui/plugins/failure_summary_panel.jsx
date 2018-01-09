@@ -1,5 +1,4 @@
-'use strict';
-const PropTypes = require('prop-types');
+import PropTypes from 'prop-types';
 
 class SuggestionsListItem extends React.Component {
     constructor(props) {

@@ -1,6 +1,7 @@
-'use strict';
 /* global JobButtonComponent, JobGroupComponent, jobButtonComponentFactory, jobGroupComponentFactory, revisionListComponent */
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": ".*Component$" }] */
+
+import PropTypes from 'prop-types';
 
 var jobPlatformDataComponent = (props) => {
     var titleText = `${props.platform.name} ${props.platform.option}`;
@@ -13,7 +14,7 @@ var jobPlatformDataComponent = (props) => {
     );
 };
 jobPlatformDataComponent.propTypes = {
-    platform: React.PropTypes.object.isRequired
+    platform: PropTypes.object.isRequired
 };
 class JobDataComponent extends React.PureComponent {
     constructor(props) {
@@ -120,15 +121,15 @@ class JobDataComponent extends React.PureComponent {
     }
 }
 JobDataComponent.propTypes = {
-    $injector: React.PropTypes.object.isRequired,
-    groups: React.PropTypes.array.isRequired,
+    $injector: PropTypes.object.isRequired,
+    groups: PropTypes.array.isRequired,
 };
 JobDataComponent.contextTypes = {
-    selectJob: React.PropTypes.func.isRequired,
-    selectJobFromAdjacentPlatform: React.PropTypes.func.isRequired,
+    selectJob: PropTypes.func.isRequired,
+    selectJobFromAdjacentPlatform: PropTypes.func.isRequired,
 };
 JobDataComponent.childContextTypes = {
-    selectJobFromAdjacentGroup: React.PropTypes.func.isRequired
+    selectJobFromAdjacentGroup: PropTypes.func.isRequired
 };
 var jobDataComponentFactory = React.createFactory(JobDataComponent);
 
@@ -155,11 +156,11 @@ class JobTableRowComponent extends React.PureComponent {
     }
 }
 JobTableRowComponent.props = {
-    $injector: React.PropTypes.object.isRequired,
-    platform: React.PropTypes.object.isRequired
+    $injector: PropTypes.object.isRequired,
+    platform: PropTypes.object.isRequired
 };
 JobTableRowComponent.childContextTypes = {
-    platform: React.PropTypes.object
+    platform: PropTypes.object
 };
 var jobTableRowComponentFactory = React.createFactory(JobTableRowComponent);
 
@@ -346,13 +347,13 @@ class JobTableComponent extends React.Component {
     }
 }
 JobTableComponent.propTypes = {
-    $injector: React.PropTypes.object,
-    resultset: React.PropTypes.object.isRequired
+    $injector: PropTypes.object,
+    resultset: PropTypes.object.isRequired
 };
 JobTableComponent.childContextTypes = {
-    selectJob: React.PropTypes.func,
-    resultsetId: React.PropTypes.number,
-    selectJobFromAdjacentPlatform: React.PropTypes.func
+    selectJob: PropTypes.func,
+    resultsetId: PropTypes.number,
+    selectJobFromAdjacentPlatform: PropTypes.func
 };
 
 var jobTableComponentFactory = React.createFactory(JobTableComponent);
@@ -401,8 +402,8 @@ class ResultSetComponent extends React.Component {
     }
 }
 ResultSetComponent.propTypes = {
-    $injector: React.PropTypes.object.isRequired,
-    resultset: React.PropTypes.object.isRequired
+    $injector: PropTypes.object.isRequired,
+    resultset: PropTypes.object.isRequired
 };
 
 treeherder.directive('resultSet', (reactDirective, $injector) =>

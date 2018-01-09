@@ -13,7 +13,7 @@ const moreRevisionsLinkComponent = props => React.DOM.li(
     )
 );
 moreRevisionsLinkComponent.propTypes = {
-    href: React.PropTypes.string.isRequired
+    href: PropTypes.string.isRequired
 };
 
 var revisionItemComponent = (props) => {
@@ -69,9 +69,9 @@ var revisionItemComponent = (props) => {
     );
 };
 revisionItemComponent.propTypes = {
-    $injector: React.PropTypes.object.isRequired,
-    revision: React.PropTypes.object.isRequired,
-    repo: React.PropTypes.object.isRequired,
+    $injector: PropTypes.object.isRequired,
+    revision: PropTypes.object.isRequired,
+    repo: PropTypes.object.isRequired,
 };
 
 var revisionListComponent = (props) => {

@@ -1,5 +1,6 @@
-'use strict';
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": ".*Factory$" }] */
+
+import PropTypes from 'prop-types';
 
 var jobCountComponent = (props) => {
     var classes = [ props.className, 'btn', 'group-btn', 'btn-xs', 'job-group-count', 'filter-shown'];
@@ -14,11 +15,11 @@ var jobCountComponent = (props) => {
     );
 };
 jobCountComponent.propsTypes = {
-    count: React.PropTypes.number.isRequired,
-    classes: React.PropTypes.array.isRequired,
-    title: React.PropTypes.string.isRequired,
-    onClick: React.PropTypes.func.isRequired,
-    key: React.PropTypes.number
+    count: PropTypes.number.isRequired,
+    classes: PropTypes.array.isRequired,
+    title: PropTypes.string.isRequired,
+    onClick: PropTypes.func.isRequired,
+    key: PropTypes.number
 };
 
 class JobButtonComponent extends React.Component {
@@ -144,15 +145,15 @@ class JobButtonComponent extends React.Component {
     }
 }
 JobButtonComponent.propTypes = {
-    $injector: React.PropTypes.object.isRequired,
-    job: React.PropTypes.object.isRequired,
-    hasGroup: React.PropTypes.bool.isRequired
+    $injector: PropTypes.object.isRequired,
+    job: PropTypes.object.isRequired,
+    hasGroup: PropTypes.bool.isRequired
 };
 JobButtonComponent.contextTypes = {
-    platform: React.PropTypes.object,
-    selectJob: React.PropTypes.func.isRequired,
-    selectJobFromAdjacentGroup: React.PropTypes.func.isRequired,
-    resultsetId: React.PropTypes.number.isRequired
+    platform: PropTypes.object,
+    selectJob: PropTypes.func.isRequired,
+    selectJobFromAdjacentGroup: PropTypes.func.isRequired,
+    resultsetId: PropTypes.number.isRequired
 };
 var jobButtonComponentFactory = React.createFactory(JobButtonComponent);
 

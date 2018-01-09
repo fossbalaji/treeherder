@@ -1,6 +1,7 @@
-'use strict';
 /* global JobButtonComponent, jobButtonComponentFactory, jobCountComponent */
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": ".*Factory$" }] */
+
+import PropTypes from 'prop-types';
 
 class JobGroupComponent extends React.Component {
     constructor(props) {
@@ -193,15 +194,15 @@ class JobGroupComponent extends React.Component {
     }
 }
 JobGroupComponent.propTypes = {
-    $injector: React.PropTypes.object.isRequired,
-    group: React.PropTypes.object.isRequired,
-    refOrder: React.PropTypes.number.isRequired
+    $injector: PropTypes.object.isRequired,
+    group: PropTypes.object.isRequired,
+    refOrder: PropTypes.number.isRequired
 };
 JobGroupComponent.contextTypes = {
-    selectJob: React.PropTypes.func.isRequired,
-    platform: React.PropTypes.object.isRequired,
-    resultsetId: React.PropTypes.number.isRequired,
-    selectJobFromAdjacentGroup: React.PropTypes.func.isRequired
+    selectJob: PropTypes.func.isRequired,
+    platform: PropTypes.object.isRequired,
+    resultsetId: PropTypes.number.isRequired,
+    selectJobFromAdjacentGroup: PropTypes.func.isRequired
 };
 var jobGroupComponentFactory = React.createFactory(JobGroupComponent);
 

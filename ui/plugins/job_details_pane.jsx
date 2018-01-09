@@ -1,5 +1,4 @@
-'use strict';
-const PropTypes = require('prop-types');
+import PropTypes from 'prop-types';
 
 // using ES6 arrow function syntax throws an error for this particular component
 function ClassificationsPane(props) {
