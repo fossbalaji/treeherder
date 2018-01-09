@@ -53,7 +53,7 @@ class JobGroupComponent extends React.Component {
         this.$rootScope.$on(
             this.thEvents.groupStateChanged,
             (e, newState) => {
-                this.setState({ expanded:  newState === 'expanded' });
+                this.setState({ expanded: newState === 'expanded' });
             }
         );
 
@@ -120,7 +120,9 @@ class JobGroupComponent extends React.Component {
                     _.extend(countInfo, stateCounts[countInfo.btnClass]);
                     if (!_.isEmpty(lastJobSelected.job) && (lastJobSelected.job.id === job.id)) {
                         countInfo.selectedClasses = ['selected-count', 'btn-lg-xform'];
-                    } else countInfo.selectedClasses = [];
+                    } else {
+                        countInfo.selectedClasses = [];
+                    }
                     if (stateCounts[countInfo.btnClass]) {
                         countInfo.count = stateCounts[countInfo.btnClass].count + 1;
                     } else {
