@@ -1,6 +1,7 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": ".*Factory$" }] */
 
 import PropTypes from 'prop-types';
+// import React from 'react';
 
 var jobCountComponent = (props) => {
     var classes = [ props.className, 'btn', 'group-btn', 'btn-xs', 'job-group-count', 'filter-shown'];
@@ -22,7 +23,7 @@ jobCountComponent.propsTypes = {
     key: PropTypes.number
 };
 
-class JobButtonComponent extends React.Component {
+export class JobButtonComponent extends React.Component {
     constructor(props) {
         super(props);
         this.$rootScope = this.props.$injector.get('$rootScope');
@@ -155,5 +156,3 @@ JobButtonComponent.contextTypes = {
     selectJobFromAdjacentGroup: PropTypes.func.isRequired,
     resultsetId: PropTypes.number.isRequired
 };
-var jobButtonComponentFactory = React.createFactory(JobButtonComponent);
-

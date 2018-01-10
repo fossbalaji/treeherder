@@ -34,6 +34,15 @@ require('ngreact');
 require('jquery.scrollto');
 require('./vendor/resizer.js');
 
+// Treeherder React UI
+require('./job-view/ui/revisions.jsx');
+require('./job-view/ui/buttons.jsx');
+require('./job-view/ui/groups.jsx');
+require('./job-view/ui/table.jsx');
+require('./job-view/redux/configureStore.js');
+require('./job-view/redux/angularEventHandlers.js');
+require('./job-view/redux/modules/pushes.js');
+
 // Treeherder JS
 require('./js/services/log.js');
 require('./js/providers.js');
@@ -44,11 +53,6 @@ require('./js/directives/treeherder/clonejobs.js');
 require('./js/directives/treeherder/resultsets.js');
 require('./js/directives/treeherder/top_nav_bar.js');
 require('./js/directives/treeherder/bottom_nav_panel.js');
-// require('./js/reactrevisions.jsx');
-require('./js/react/revisions.js');
-require('./js/react/buttons.js');
-require('./js/react/groups.js');
-require('./js/react/table.js');
 require('./js/services/main.js');
 require('./js/services/buildapi.js');
 require('./js/services/taskcluster.js');
@@ -87,14 +91,14 @@ require('./js/controllers/filters.js');
 require('./js/controllers/jobs.js');
 require('./js/controllers/bugfiler.js');
 require('./js/controllers/tcjobactions.js');
+require('./plugins/pinboard.js');
+require('./plugins/failure_summary/controller.js');
+require('./plugins/annotations/controller.js');
+require('./plugins/auto_classification/controller.js');
+require('./plugins/similar_jobs/controller.js');
+require('./js/filters.js');
 require('./plugins/tabs.js');
 require('./plugins/controller.js');
 require('./plugins/job_details_pane.jsx');
 require('./plugins/failure_summary_panel.jsx');
 require('./plugins/annotations_panel.jsx');
-require('./plugins/pinboard.js');
-require('./plugins/annotations/controller.js');
-require('./plugins/failure_summary/controller.js');
-require('./plugins/similar_jobs/controller.js');
-require('./plugins/auto_classification/controller.js');
-require('./js/filters.js');
