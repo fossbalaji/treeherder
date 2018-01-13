@@ -208,13 +208,13 @@ FailureSummaryPanel.propTypes = {
     logParseStatus: PropTypes.string
 };
 
-module.exports = {
-    FailureSummaryPanel,
-    SuggestionsListItem,
-    BugListItem,
-    ErrorsList,
-    ListItem
-};
+// module.exports = {
+//     FailureSummaryPanel,
+//     SuggestionsListItem,
+//     BugListItem,
+//     ErrorsList,
+//     ListItem
+// };
 
 treeherder.directive('failureSummaryPanel', ['reactDirective', '$injector', (reactDirective, $injector) =>
 reactDirective(FailureSummaryPanel, undefined, {}, { $injector })]);

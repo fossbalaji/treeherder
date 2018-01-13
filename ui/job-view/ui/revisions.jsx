@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import { connect } from "react-redux";
 
 const MoreRevisionsLink = props => (
     <li>
@@ -11,9 +11,9 @@ const MoreRevisionsLink = props => (
     </li>
 );
 
-MoreRevisionsLink.propTypes = {
-    href: PropTypes.string.isRequired
-};
+// MoreRevisionsLink.propTypes = {
+//     href: PropTypes.string.isRequired
+// };
 
 const Initials = (props) => {
     const str = props.author || '';
@@ -78,22 +78,17 @@ const RevisionItem = (props) => {
         </span>
     </li>;
 };
-RevisionItem.propTypes = {
-    revision: PropTypes.object.isRequired,
-    repo: PropTypes.object.isRequired,
-    linkifyBugsFilter: PropTypes.func.isRequired,
-    initialsFilter: PropTypes.func.isRequired
-};
 
-export const RevisionList = (props) => {
-    const linkifyBugsFilter = props.$injector.get('$filter')('linkifyBugs');
+const mapStateToProps = ({ angularProviders }) => angularProviders;
+
+const RevisionListComponent = (props) => {
     const hasMore = props.resultset.revision_count > props.resultset.revisions.length;
     return (
         <span className="revision-list col-5">
             <ul className="list-unstyled">
                 {props.resultset.revisions.map((revision, i) =>
                     <RevisionItem
-                        linkifyBugsFilter={linkifyBugsFilter}
+                        linkifyBugsFilter={props.linkifyBugsFilter}
                         revision={revision}
                         repo={props.repo}
                         key={i} />
@@ -107,8 +102,5 @@ export const RevisionList = (props) => {
         </span>
     );
 };
-RevisionList.propTypes = {
-    resultset: PropTypes.object.isRequired,
-    repo: PropTypes.object.isRequired,
-    $injector: PropTypes.object.isRequired
-};
+
+export const RevisionList = connect(mapStateToProps)(RevisionListComponent);

@@ -250,13 +250,13 @@ JobDetailsPane.propTypes = {
     repoName: PropTypes.string
 };
 
-module.exports = {
-    JobStatusPane,
-    JobDetailsListItem,
-    JobDetailsPane,
-    JobDetailsList,
-    ClassificationsPane
-};
+// module.exports = {
+//     JobStatusPane,
+//     JobDetailsListItem,
+//     JobDetailsPane,
+//     JobDetailsList,
+//     ClassificationsPane
+// };
 
 treeherder.directive('jobDetailsPane', ['reactDirective', '$injector', (reactDirective, $injector) =>
 reactDirective(JobDetailsPane, undefined, {}, { $injector })]);

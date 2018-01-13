@@ -38,10 +38,13 @@ require('./vendor/resizer.js');
 require('./job-view/ui/revisions.jsx');
 require('./job-view/ui/buttons.jsx');
 require('./job-view/ui/groups.jsx');
-require('./job-view/ui/table.jsx');
-require('./job-view/redux/configureStore.js');
-require('./job-view/redux/angularEventHandlers.js');
+require('./job-view/ui/jobs.jsx');
+require('./job-view/aggregateIds.js');
 require('./job-view/redux/modules/pushes.js');
+require('./job-view/redux/modules/angularProviders.js');
+require('./job-view/redux/configureStore.js');
+require('./job-view/redux/store.js');
+require('./job-view/redux/angularEventHandlers.js');
 
 // Treeherder JS
 require('./js/services/log.js');
