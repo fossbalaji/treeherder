@@ -7,19 +7,19 @@ const mapStateToProps = ({ angularProviders }) => angularProviders;
 class JobGroupComponent extends React.Component {
     constructor(props) {
         super(props);
-        this.toggleExpanded = this.toggleExpanded.bind(this);
-        this.changeJobSelection = this.changeJobSelection.bind(this);
-        this.groupButtonsAndCounts = this.groupButtonsAndCounts.bind(this);
-        this.selectFirstVisibleJob = this.selectFirstVisibleJob.bind(this);
-        this.selectLastVisibleJob = this.selectLastVisibleJob.bind(this);
+        // this.toggleExpanded = this.toggleExpanded.bind(this);
+        // this.changeJobSelection = this.changeJobSelection.bind(this);
+        // this.groupButtonsAndCounts = this.groupButtonsAndCounts.bind(this);
+        // this.selectFirstVisibleJob = this.selectFirstVisibleJob.bind(this);
+        // this.selectLastVisibleJob = this.selectLastVisibleJob.bind(this);
 
-        var showDuplicateJobs = this.props.$location.search().duplicate_jobs === 'visible';
+        const showDuplicateJobs = this.props.$location.search().duplicate_jobs === 'visible';
         // The group should be expanded initially if the global group state is expanded
-        var expanded = this.props.$location.search().group_state === 'expanded';
+        let expanded = this.props.$location.search().group_state === 'expanded';
         // It should also be expanded if the currently selected job is in the group
         // $rootScope.selectedJob will not be set on initial load: attempt to find an ID in the querystring:
         if (!expanded) {
-            var selectedJobId = parseInt(this.props.$location.search().selectedJob);
+            const selectedJobId = parseInt(this.props.$location.search().selectedJob);
             if (selectedJobId && _.some(this.props.group.jobs, { id: selectedJobId })) {
                 expanded = true;
             }
@@ -56,40 +56,40 @@ class JobGroupComponent extends React.Component {
     toggleExpanded() {
         this.setState({ expanded: !this.state.expanded });
     }
-    changeJobSelection(e, direction) {
-        // Ignore job change event if this group has no visible jobs
-        if (_.isEmpty(this.refs)) return;
-        var selectedButton = _.find(this.refs, component =>
-            component.props.job.id === e.targetScope.selectedJob.id);
-        if (!selectedButton) return;
-        var index = selectedButton.props.refOrder;
-
-        if (direction === 'next' && index + 1 < _.size(this.refs)) {
-            this.context.selectJob(this.refs[index + 1].props.job);
-            return;
-        } else if (direction === 'previous' && index !== 0) {
-            this.context.selectJob(this.refs[index - 1].props.job);
-            return;
-        }
-        this.context.selectJobFromAdjacentGroup(direction, this);
-    }
-    selectFirstVisibleJob() {
-        var first = this.refs[Object.keys(this.refs)[0]];
-        if (first instanceof JobButton) {
-            this.context.selectJob(first.props.job);
-        } else {
-            this.context.selectJobFromAdjacentGroup('next', this);
-        }
-    }
-    selectLastVisibleJob() {
-        var refKeys = Object.keys(this.refs);
-        var last = this.refs[refKeys[refKeys.length - 1]];
-        if (last instanceof JobButton) {
-            this.context.selectJob(last.props.job);
-        } else {
-            this.context.selectJobFromAdjacentGroup('previous', this);
-        }
-    }
+    // changeJobSelection(e, direction) {
+    //     // Ignore job change event if this group has no visible jobs
+    //     if (_.isEmpty(this.refs)) return;
+    //     const selectedButton = _.find(this.refs, component =>
+    //         component.props.job.id === e.targetScope.selectedJob.id);
+    //     if (!selectedButton) return;
+    //     const index = selectedButton.props.refOrder;
+    //
+    //     if (direction === 'next' && index + 1 < _.size(this.refs)) {
+    //         this.context.selectJob(this.refs[index + 1].props.job);
+    //         return;
+    //     } else if (direction === 'previous' && index !== 0) {
+    //         this.context.selectJob(this.refs[index - 1].props.job);
+    //         return;
+    //     }
+    //     this.context.selectJobFromAdjacentGroup(direction, this);
+    // }
+    // selectFirstVisibleJob() {
+    //     const first = this.refs[Object.keys(this.refs)[0]];
+    //     if (first instanceof JobButton) {
+    //         this.context.selectJob(first.props.job);
+    //     } else {
+    //         this.context.selectJobFromAdjacentGroup('next', this);
+    //     }
+    // }
+    // selectLastVisibleJob() {
+    //     const refKeys = Object.keys(this.refs);
+    //     const last = this.refs[refKeys[refKeys.length - 1]];
+    //     if (last instanceof JobButton) {
+    //         this.context.selectJob(last.props.job);
+    //     } else {
+    //         this.context.selectJobFromAdjacentGroup('previous', this);
+    //     }
+    // }
     groupButtonsAndCounts() {
         let buttons = [];
         const counts = [];
@@ -108,7 +108,7 @@ class JobGroupComponent extends React.Component {
                     // render the job itself, not a count
                     buttons.push(job);
                 } else {
-                    var lastJobSelected = {};
+                    const lastJobSelected = {};
                     countInfo = { ...countInfo, ...stateCounts[countInfo.btnClass] };
                     if (!_.isEmpty(lastJobSelected.job) && (lastJobSelected.job.id === job.id)) {
                         countInfo.selectedClasses = ['selected-count', 'btn-lg-xform'];
@@ -157,7 +157,7 @@ class JobGroupComponent extends React.Component {
                   title={this.props.group.name}
                   data-grkey={this.props.group.grkey}>
               <button className="btn group-symbol"
-                      data-ignore-job-clear-on-click
+                      data-ignore-job-clear-on-click={true}
                       onClick={this.toggleExpanded}>{this.props.group.symbol}{this.tierEl}</button>
 
               <span className="group-content">

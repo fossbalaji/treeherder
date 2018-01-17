@@ -11,10 +11,6 @@ const MoreRevisionsLink = props => (
     </li>
 );
 
-// MoreRevisionsLink.propTypes = {
-//     href: PropTypes.string.isRequired
-// };
-
 const Initials = (props) => {
     const str = props.author || '';
     const words = str.split(' ');

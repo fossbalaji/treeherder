@@ -1,4 +1,5 @@
 import { connect } from "react-redux";
+import { store, actions } from '../redux/store';
 
 export const JobCountComponent = (props) => {
     const classes = [ props.className, 'btn', 'group-btn', 'btn-xs', 'job-group-count', 'filter-shown'];
@@ -10,7 +11,10 @@ export const JobCountComponent = (props) => {
     );
 };
 
-const mapStateToProps = ({ angularProviders }) => angularProviders;
+const mapStateToProps = ({ angularProviders, pushes }) => ({
+  ...angularProviders,
+  ...pushes
+});
 
 class JobButtonComponent extends React.Component {
     constructor(props) {
@@ -22,8 +26,8 @@ class JobButtonComponent extends React.Component {
             runnable: (status === 'runnable')
         };
 
-        this.onMouseDown = this.onMouseDown.bind(this);
-        this.changeJobSelection = this.changeJobSelection.bind(this);
+        // this.onMouseDown = this.onMouseDown.bind(this);
+        // this.changeJobSelection = this.changeJobSelection.bind(this);
 
         if (!this.props.hasGroup) {
             this.props.$rootScope.$on(
@@ -45,13 +49,13 @@ class JobButtonComponent extends React.Component {
     componentWillUnmount() {
         this.unbindSelectionWatch();
     }
-    changeJobSelection(e, direction) {
-        if (e.targetScope.selectedJob.id === this.props.job.id) {
-            this.context.selectJobFromAdjacentGroup(direction, this);
-        }
-    }
+    // changeJobSelection(e, direction) {
+    //     if (e.targetScope.selectedJob.id === this.props.job.id) {
+    //         this.context.selectJobFromAdjacentGroup(direction, this);
+    //     }
+    // }
     handleJobClick() {
-        this.context.selectJob(this.props.job);
+      store.dispatch(actions.pushes.actions.selectJob(this.props.job.id));
     }
     handleLogViewerClick() {
         // Open logviewer in a new window
@@ -85,17 +89,17 @@ class JobButtonComponent extends React.Component {
     }
     render() {
       if (!this.props.job.visible) return null;
-      var status = this.props.thResultStatus(this.props.job);
-      var statusInfo = this.props.thResultStatusInfo(status, this.props.job.failure_classification_id);
-      var title = `${this.props.job.job_type_name} - ${status}`;
+      const status = this.props.thResultStatus(this.props.job);
+      const statusInfo = this.props.thResultStatusInfo(status, this.props.job.failure_classification_id);
+      let title = `${this.props.job.job_type_name} - ${status}`;
 
       if (this.props.job.state === 'completed') {
-          var duration = Math.round((this.props.job.end_timestamp - this.props.job.start_timestamp) / 60);
+          const duration = Math.round((this.props.job.end_timestamp - this.props.job.start_timestamp) / 60);
           title += ` (${duration} mins)`;
       }
 
-      var key = `key${this.props.job.id}`;
-      var classes = ['btn', key, statusInfo.btnClass];
+      const key = `key${this.props.job.id}`;
+      const classes = ['btn', key, statusInfo.btnClass];
 
       if (this.state.runnable) {
           classes.push('runnable-job-btn', 'runnable');

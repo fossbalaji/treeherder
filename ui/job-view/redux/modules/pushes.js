@@ -1,16 +1,9 @@
 export const types = {
-  // STORE_JOBS_LOADED: "STORE_JOBS_LOADED",
   STORE_PLATFORMS: "STORE_PLATFORMS",
   SELECT_JOB: "SELECT_JOB",
 };
 
 export const actions = {
-  // storeJobsLoaded: (pushId, jobsLoaded) => ({
-  //   type: types.STORE_JOBS_LOADED,
-  //   payload: {
-  //     pushId, jobsLoaded,
-  //   }
-  // }),
   storePlatforms: (pushId, platforms) => ({
     type: types.STORE_PLATFORMS,
     payload: {
@@ -26,7 +19,6 @@ export const actions = {
 };
 
 const initialState = {
-  // jobsLoaded: {},
   platforms: {},
   selectedJobId: null,
 };
@@ -36,12 +28,6 @@ const initialState = {
 // to get the shared functionality there.
 export const reducer = (state = initialState, action) => {
   switch (action.type) {
-    // case types.STORE_JOBS_LOADED:
-    //   return {
-    //     ...state,
-    //     jobsLoaded: { ...state.jobsLoaded,
-    //                   [action.payload.pushId]: action.payload.jobsLoaded }
-    //   };
     case types.STORE_PLATFORMS:
       return {
         ...state,
