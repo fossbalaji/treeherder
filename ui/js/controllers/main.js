@@ -143,6 +143,7 @@ treeherderApp.controller('MainCtrl', [
 
         $rootScope.$on(thEvents.jobClick, function (ev, job) {
             $location.search(QS_SELECTED_JOB, job.id);
+            ThResultSetStore.setSelectedJob($rootScope.repoName, job);
         });
 
         $rootScope.$on(thEvents.clearSelectedJob, function () {

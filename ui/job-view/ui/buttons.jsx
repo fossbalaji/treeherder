@@ -22,7 +22,6 @@ class JobButtonComponent extends React.Component {
         const status = this.props.thResultStatus(this.props.job);
 
         this.state = {
-            // selected: this.props.job.id === this.props.selectedJobId,
             runnable: (status === 'runnable')
         };
 

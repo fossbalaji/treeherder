@@ -135,8 +135,8 @@ class JobTableComponent extends React.Component {
     );
 
     this.props.$rootScope.$on(
-        this.props.thEvents.changeSelection, () => {
-        this.changeSelectedJob();
+        this.props.thEvents.changeSelection, (ev, direction, jobNavSelector) => {
+        this.changeSelectedJob(ev, direction, jobNavSelector);
       }
     );
 
@@ -167,8 +167,10 @@ class JobTableComponent extends React.Component {
   }
 
   changeSelectedJob(ev, direction, jobNavSelector) {
-    if (this.props.$rootScope.selectedJob.push_id !== this.pushId) {
-      return;
+    if (this.props.$rootScope.selectedJob) {
+     if (this.props.$rootScope.selectedJob.push_id !== this.pushId) {
+       return;
+     }
     }
 
     const jobMap = this.props.ThResultSetStore.getJobMap(this.props.$rootScope.repoName);
@@ -196,14 +198,12 @@ class JobTableComponent extends React.Component {
     // It's still selected, but no longer visible.
     jobs = $(".th-view-content").find(jobNavSelector.selector).filter(":visible, .selected-job, .selected-count");
     if (jobs.length) {
-      console.log("changeSelectedJob", jobs);
       const selIdx = jobs.index(jobs.filter(".selected-job, .selected-count").first());
       const idx = getIndex(selIdx, jobs);
 
       el = $(jobs[idx]);
       key = el.attr('data-jmkey');
       if (jobMap && jobMap[key] && selIdx !== idx) {
-        console.log("should select", jobMap[key].job_obj);
         this.selectJob(jobMap[key].job_obj);
         return;
       }
