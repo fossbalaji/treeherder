@@ -10,12 +10,23 @@ export const actions = {
       pushId, platforms,
     }
   }),
-  selectJob: jobId => ({
+  selectJob: (job, $rootScope) => {
+    $rootScope.selectedJob = job;
+    const jobId = job ? job.id : null;
+    return {
+      type: types.SELECT_JOB,
+      payload: {
+        jobId
+      }
+    };
+  },
+  setSelectedJobId: jobId => ({
     type: types.SELECT_JOB,
     payload: {
       jobId,
     }
   })
+
 };
 
 const initialState = {

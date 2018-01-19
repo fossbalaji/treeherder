@@ -3,7 +3,7 @@ import { RevisionList } from './revisions';
 import { JobGroup } from './groups';
 import { JobButton } from './buttons';
 import { connect, Provider } from "react-redux";
-import { store } from '../redux/store';
+import { actions, store } from '../redux/store';
 import * as aggregateIds from '../aggregateIds';
 import { platformMap } from "../../js/constants";
 import * as angularProviders from "../redux/modules/angularProviders";
@@ -20,87 +20,16 @@ const JobPlatformDataComponent = (props) => {
 };
 
 class JobDataComponent extends React.PureComponent {
-    constructor(props) {
-        super(props);
-        // this.selectJobFromAdjacentGroup = this.selectJobFromAdjacentGroup.bind(this);
-        // this.selectFirstVisibleJob = this.selectFirstVisibleJob.bind(this);
-        // this.selectLastVisibleJob = this.selectLastVisibleJob.bind(this);
-    }
-    // selectJobFromAdjacentGroup(direction, src) {
-    //     const index = src.props.refOrder;
-    //     if (direction === 'next') {
-    //         let nextIndex = index + 1;
-    //         if (nextIndex === _.size(this.refs)) {
-    //             // This is the last group in its platform
-    //             // Select first job in the next platform
-    //             this.context.selectJobFromAdjacentPlatform(direction, src);
-    //         } else if (this.refs[nextIndex] instanceof JobButton) {
-    //             this.context.selectJob(this.refs[nextIndex].props.job);
-    //         } else {
-    //             // Find the next group with visible buttons and select its first button
-    //             while (nextIndex < _.size(this.refs) && _.isEmpty(this.refs[nextIndex].refs)) {
-    //                 nextIndex++;
-    //             }
-    //             if (nextIndex < _.size(this.refs)) {
-    //                 this.refs[nextIndex].selectFirstVisibleJob();
-    //             } else {
-    //                 this.context.selectJobFromAdjacentPlatform(direction, src);
-    //             }
-    //         }
-    //     } else if (index === 0) {
-    //         // No more previous groups left in this platform
-    //         // Select last job in previous platform
-    //         this.context.selectJobFromAdjacentPlatform(direction, src);
-    //     } else {
-    //         let previousIndex = index - 1;
-    //         if (this.refs[previousIndex] instanceof JobButton) {
-    //             this.context.selectJob(this.refs[previousIndex].props.job);
-    //         } else {
-    //             // Search refs for a previous group with visible buttons
-    //             // or a previous standalone job button
-    //             let previousJobOrGroup = this.refs[previousIndex];
-    //             while (previousJobOrGroup &&
-    //             (_.isEmpty(previousJobOrGroup.refs)) &&
-    //             !(previousJobOrGroup instanceof JobButton)) {
-    //                 previousJobOrGroup = this.refs[--previousIndex];
-    //             }
-    //             if (previousJobOrGroup instanceof JobGroup) {
-    //                 previousJobOrGroup.selectLastVisibleJob();
-    //             } else if (previousJobOrGroup instanceof JobButton) {
-    //                 this.context.selectJob(previousJobOrGroup.props.job);
-    //             } else {
-    //                 this.context.selectJobFromAdjacentPlatform(direction, src);
-    //             }
-    //         }
-    //     }
-    // }
-    // selectFirstVisibleJob() {
-    //     const first = this.refs[Object.keys(this.refs)[0]];
-    //     if (first instanceof JobButton) {
-    //         this.context.selectJob(first.props.job);
-    //     } else if (first instanceof JobGroup) {
-    //         first.selectFirstVisibleJob();
-    //     }
-    // }
-    // selectLastVisibleJob() {
-    //     const refKeys = Object.keys(this.refs);
-    //     const last = this.refs[refKeys[refKeys.length - 1]];
-    //     if (last instanceof JobButton) {
-    //         this.context.selectJob(last.props.job);
-    //     } else if (last instanceof JobGroup) {
-    //         last.selectLastVisibleJob();
-    //     }
-    // }
-    render() {
+   render() {
       return (
         <td className="job-row">
           { this.props.groups.map((group, i) => {
             if (group.symbol !== '?') {
               return (
-                <JobGroup group={group}
-                          refOrder={i}
-                          key={group.mapKey}
-                          ref={i}/>
+                group.visible && <JobGroup group={group}
+                                           refOrder={i}
+                                           key={group.mapKey}
+                                           ref={i}/>
               );
             }
             return (
@@ -124,7 +53,6 @@ class JobTableRowComponent extends React.PureComponent {
     return (
       <tr id={this.props.platform.id}
           key={this.props.platform.id}>
-
         <JobPlatformDataComponent platform={this.props.platform} />
         <JobDataComponent groups={this.props.platform.groups}
                           ref="data"/>
@@ -146,6 +74,38 @@ class JobTableComponent extends React.Component {
   constructor(props) {
     super(props);
 
+    this.rsMap = null;
+    this.pushId = this.props.push.id;
+    this.aggregateId = aggregateIds.getResultsetTableId(
+      this.props.$rootScope.repoName,
+      this.pushId,
+      this.props.push.revision
+    );
+  }
+
+  applyNewJobs() {
+    this.rsMap = this.props.ThResultSetStore.getResultSetsMap(this.props.$rootScope.repoName);
+    if (!this.rsMap[this.pushId] || !this.rsMap[this.pushId].rs_obj.platforms) {
+      return;
+    }
+
+    const platforms = this.props.platforms[this.pushId] || {};
+    this.rsMap[this.pushId].rs_obj.platforms.forEach((platform) => {
+      platform.id = this.getIdForPlatform(platform);
+      platform.name = platformMap[platform.name] || platform.name;
+      platform.groups.forEach((group) => {
+        if (group.symbol !== '?') {
+          group.grkey = group.mapKey;
+        }
+      });
+      platform.visible = true;
+      platforms[platform.id] = this.filterPlatform(platform);
+    });
+    store.dispatch(pushes.actions.storePlatforms(this.pushId, platforms));
+
+  }
+
+  componentWillMount() {
     // Check for a selected job in the result set store
     let selectedJobId = null;
     let selectedJobObj = this.props.ThResultSetStore.getSelectedJob(this.props.$rootScope.repoName);
@@ -159,55 +119,111 @@ class JobTableComponent extends React.Component {
       selectedJobId = selectedJobObj.job.id;
     }
 
-    store.dispatch(pushes.actions.selectJob(selectedJobId));
+    store.dispatch(pushes.actions.setSelectedJobId(selectedJobId));
 
-    this.rsMap = null;
-    this.pushId = this.props.push.id;
-    this.aggregateId = aggregateIds.getResultsetTableId(
-      this.props.$rootScope.repoName,
-      this.pushId,
-      this.props.push.revision
-    );
+    this.applyNewJobs();
+  }
 
-    // this.filterJobs = this.filterJobs.bind(this);
-    // this.selectJob = this.selectJob.bind(this);
-    // this.selectJobFromAdjacentPlatform = this.selectJobFromAdjacentPlatform.bind(this);
+  componentDidMount() {
 
     this.props.$rootScope.$on(
-      this.props.thEvents.applyNewJobs,
-      (ev, appliedpushId) => {
-        if (appliedpushId !== this.pushId) return;
-        this.rsMap = this.props.ThResultSetStore.getResultSetsMap(this.props.$rootScope.repoName);
-        const platforms = this.props.platforms[this.pushId] || {};
-        this.rsMap[this.pushId].rs_obj.platforms.forEach((platform) => {
-          platform.id = this.getIdForPlatform(platform);
-          platform.name = platformMap[platform.name] || platform.name;
-          platform.groups.forEach((group) => {
-            if (group.symbol !== '?') {
-              group.grkey = group.mapKey;
-            }
-          });
-          platforms[platform.id] = this.filterPlatform(platform);
-        });
-        store.dispatch(pushes.actions.storePlatforms(this.pushId, platforms));
+      this.props.thEvents.applyNewJobs, (ev, appliedpushId) => {
+        if (appliedpushId === this.pushId) {
+          this.applyNewJobs();
+        }
       }
     );
 
     this.props.$rootScope.$on(
-      this.props.thEvents.globalFilterChanged, this.filterJobs
+        this.props.thEvents.changeSelection, () => {
+        this.changeSelectedJob();
+      }
     );
 
     this.props.$rootScope.$on(
-      this.props.thEvents.searchPage, this.filterJobs
+      this.props.thEvents.clearSelectedJob, () => {
+        store.dispatch(actions.pushes.selectJob(null, this.props.$rootScope));
+      }
     );
 
     this.props.$rootScope.$on(
-      this.props.thEvents.groupStateChanged, this.filterJobs
+      this.props.thEvents.globalFilterChanged, () => {
+        this.filterJobs();
+      }
     );
 
     this.props.$rootScope.$on(
-      this.props.thEvents.searchPage, this.filterJobs
+      this.props.thEvents.groupStateChanged, () => {
+        this.filterJobs();
+      }
     );
+
+    this.props.$rootScope.$on(
+      this.props.thEvents.searchPage, () => {
+        this.filterJobs();
+      }
+    );
+
+  }
+
+  changeSelectedJob(ev, direction, jobNavSelector) {
+    if (this.props.$rootScope.selectedJob.push_id !== this.pushId) {
+      return;
+    }
+
+    const jobMap = this.props.ThResultSetStore.getJobMap(this.props.$rootScope.repoName);
+    let el, key, jobs, getIndex;
+
+    if (direction === 'next') {
+        getIndex = function (idx, jobs) {
+            return idx+1 > _.size(jobs)-1 ? 0: idx+1;
+        };
+    } else if (direction === 'previous') {
+        getIndex = function (idx, jobs) {
+            return idx-1 < 0 ? _.size(jobs)-1 : idx-1;
+        };
+    }
+
+    // Filter the list of possible jobs down to ONLY ones in the .th-view-content
+    // div (excluding pinboard) and then to the specific selector passed
+    // in.  And then to only VISIBLE (not filtered away) jobs.  The exception
+    // is for the .selected-job.  If that's not visible, we still want to
+    // include it, because it is the anchor from which we find
+    // the next/previous job.
+    //
+    // The .selected-job can be invisible, for instance, when filtered to
+    // unclassified failures only, and you then classify the selected job.
+    // It's still selected, but no longer visible.
+    jobs = $(".th-view-content").find(jobNavSelector.selector).filter(":visible, .selected-job, .selected-count");
+    if (jobs.length) {
+      console.log("changeSelectedJob", jobs);
+      const selIdx = jobs.index(jobs.filter(".selected-job, .selected-count").first());
+      const idx = getIndex(selIdx, jobs);
+
+      el = $(jobs[idx]);
+      key = el.attr('data-jmkey');
+      if (jobMap && jobMap[key] && selIdx !== idx) {
+        console.log("should select", jobMap[key].job_obj);
+        this.selectJob(jobMap[key].job_obj);
+        return;
+      }
+    }
+    // if there was no new job selected, then ensure that we clear any job that
+    // was previously selected.
+    if ($(".selected-job").css('display') === 'none') {
+        this.props.$rootScope.closeJob();
+    }
+  }
+
+  selectJob(job) {
+    // Delay switching jobs right away, in case the user is switching rapidly between jobs
+    store.dispatch(actions.pushes.selectJob(job, this.props.$rootScope));
+    if (this.jobChangedTimeout) {
+      window.clearTimeout(this.jobChangedTimeout);
+    }
+    this.jobChangedTimeout = window.setTimeout(() => {
+      this.props.$rootScope.$emit(this.props.thEvents.jobClick, job);
+    }, 200);
   }
 
   getIdForPlatform(platform) {
@@ -219,52 +235,12 @@ class JobTableComponent extends React.Component {
     );
   }
 
-  getPlatformIdForJob(job) {
-    return aggregateIds.getPlatformRowId(
-      this.props.$rootScope.repoName,
-      this.props.push.id,
-      job.platform,
-      job.platform_option
-    );
-  }
-
-  selectJob(job) {
-    // Delay switching jobs right away, in case the user is switching rapidly between jobs
-    if (this.jobChangedTimeout) {
-      window.clearTimeout(this.jobChangedTimeout);
-    }
-    this.jobChangedTimeout = window.setTimeout(() => {
-      this.props.$rootScope.$emit(
-        this.props.thEvents.jobClick, job
-      );
-      this.props.ThResultSetStore.setSelectedJob(
-        this.props.$rootScope.repoName, job
-      );
-    }, 200);
-  }
-
-  // selectJobFromAdjacentPlatform(direction, src) {
-  //   if (src.context.pushId !== this.props.push.id) return;
-  //   const platformId = src.context.platform.id;
-  //   const selectedPlatform = this.refs[platformId];
-  //   if (!selectedPlatform) return;
-  //   let index = selectedPlatform.props.refOrder;
-  //   index = direction === 'next' ? index + 1 : index - 1;
-  //   const targetPlatform = _.find(this.refs, component => component.props.refOrder === index);
-  //   if (direction === 'next') {
-  //     targetPlatform.refs.data.selectFirstVisibleJob();
-  //   } else {
-  //     targetPlatform.refs.data.selectLastVisibleJob();
-  //   }
-  // }
-
   filterJobs() {
     if (_.isEmpty(this.props.platforms)) return;
-    const platforms = _.cloneDeep(this.props.platforms[this.pushId]);
-    _.forEach(platforms, (platform) => {
-      platforms[platform.id] = this.filterPlatform(platform);
-    });
-    store.dispatch(pushes.actions.storePlatforms(this.pushId, platforms));
+    const pushPlatforms = Object.values(this.props.platforms[this.pushId]).reduce((acc, platform) => ({
+        ...acc, [platform.id]: this.filterPlatform(platform)
+      }), {});
+    store.dispatch(pushes.actions.storePlatforms(this.pushId, pushPlatforms));
   }
 
   filterPlatform(platform) {
@@ -293,7 +269,7 @@ class JobTableComponent extends React.Component {
       <table id={this.aggregateId} className="table-hover">
         <tbody>
           {platforms ? Object.keys(platforms).map((id, i) => (
-            // this.props.platforms[this.pushId][id].visible &&
+            platforms[id].visible &&
               <JobTableRowComponent platform={ platforms[id] }
                                     key={ id }
                                     ref={ id }

@@ -22,12 +22,11 @@ class JobButtonComponent extends React.Component {
         const status = this.props.thResultStatus(this.props.job);
 
         this.state = {
-            selected: this.props.job.id === this.props.$rootScope.selectedJob,
+            // selected: this.props.job.id === this.props.selectedJobId,
             runnable: (status === 'runnable')
         };
 
-        // this.onMouseDown = this.onMouseDown.bind(this);
-        // this.changeJobSelection = this.changeJobSelection.bind(this);
+        this.handleJobClick = this.handleJobClick.bind(this);
 
         if (!this.props.hasGroup) {
             this.props.$rootScope.$on(
@@ -35,27 +34,14 @@ class JobButtonComponent extends React.Component {
             );
         }
     }
-    componentWillMount() {
-        // Modify styles in response to currently selected job id
-        this.unbindSelectionWatch = this.props.$rootScope.$watch('selectedJob', () => {
-            if (this.props.$rootScope.selectedJob &&
-               (this.props.$rootScope.selectedJob.id === this.props.job.id)) {
-                this.setState({ selected: true });
-            } else {
-                this.setState({ selected: false });
-            }
-        });
-    }
-    componentWillUnmount() {
-        this.unbindSelectionWatch();
-    }
-    // changeJobSelection(e, direction) {
-    //     if (e.targetScope.selectedJob.id === this.props.job.id) {
-    //         this.context.selectJobFromAdjacentGroup(direction, this);
-    //     }
-    // }
+
     handleJobClick() {
-      store.dispatch(actions.pushes.actions.selectJob(this.props.job.id));
+      store.dispatch(actions.pushes.selectJob(
+        this.props.job,
+        this.props.$rootScope
+      ));
+      this.props.$rootScope.selectedJob = this.props.job;
+      this.props.$rootScope.$emit(this.props.thEvents.jobClick, this.props.job);
     }
     handleLogViewerClick() {
         // Open logviewer in a new window
@@ -107,7 +93,7 @@ class JobButtonComponent extends React.Component {
           classes.push('job-btn');
       }
 
-      if (this.state.selected) {
+      if (this.props.job.id === this.props.selectedJobId) {
           classes.push(this.state.runnable ? 'runnable-job-btn-selected' : 'selected-job');
           classes.push('btn-lg-xform');
       } else {
@@ -117,7 +103,7 @@ class JobButtonComponent extends React.Component {
       if (this.props.job.visible) classes.push('filter-shown');
 
       const attributes = {
-          onMouseDown: this.onMouseDown,
+          onMouseDown: this.handleJobClick,
           className: classes.join(' '),
           'data-jmkey': key,
           'data-ignore-job-clear-on-click': true,

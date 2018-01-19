@@ -145,14 +145,14 @@
 .group-btn.btn-ltblue-count,
 .group-btn.btn-yellow-count,
 .group-btn.btn-pink-count {
-  margin: 0 -4px 0 -1px;
+  margin: 0 -2px 0 0;
 }
 
 .job-btn.btn-red,
 .job-btn.btn-orange,
 .job-btn.btn-yellow,
 .job-btn.btn-purple {
-  margin: 0 -3px 1px 0;
+  margin: 0 -1px 1px 1px;
 }
 
 .btn-orange-classified::after,
