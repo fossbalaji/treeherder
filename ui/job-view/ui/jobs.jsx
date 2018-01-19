@@ -11,40 +11,44 @@ import * as pushes from "../redux/modules/pushes";
 import * as _ from 'lodash';
 
 const JobPlatformDataComponent = (props) => {
-    const titleText = `${props.platform.name} ${props.platform.option}`;
-    return (
-        <td className='platform'>
-            <span title="`${titleText}`">{titleText}</span>
-        </td>
-    );
+  const titleText = `${props.platform.name} ${props.platform.option}`;
+  return (
+    <td className='platform'>
+      <span title="`${titleText}`">{titleText}</span>
+    </td>
+  );
 };
 
+const mapJobDataStateToProps = ({ pushes }) => pushes;
+
 class JobDataComponent extends React.PureComponent {
-   render() {
-      return (
-        <td className="job-row">
-          { this.props.groups.map((group, i) => {
-            if (group.symbol !== '?') {
-              return (
-                group.visible && <JobGroup group={group}
-                                           refOrder={i}
-                                           key={group.mapKey}
-                                           ref={i}/>
-              );
-            }
+  render() {
+    return (
+      <td className="job-row">
+        {this.props.groups.map((group, i) => {
+          if (group.symbol !== '?') {
             return (
-              group.jobs.map(job => (
-                <JobButton job={job}
-                           key={job.id}
-                           hasGroup={false}
-                           ref={i}
-                           refOrder={i}/>
-              ))
+              group.visible && <JobGroup group={group}
+                                         refOrder={i}
+                                         key={group.mapKey}
+                                         ref={i}
+                                         expanded={this.props.expanded}
+                                         showDuplicateJobs={this.props.showDuplicateJobs}/>
             );
-          })}
-        </td>
-      );
-    };
+          }
+          return (
+            group.jobs.map(job => (
+              <JobButton job={job}
+                         key={job.id}
+                         hasGroup={false}
+                         ref={i}
+                         refOrder={i}/>
+            ))
+          );
+        })}
+      </td>
+    );
+  };
 }
 
 class JobTableRowComponent extends React.PureComponent {
@@ -53,16 +57,16 @@ class JobTableRowComponent extends React.PureComponent {
     return (
       <tr id={this.props.platform.id}
           key={this.props.platform.id}>
-        <JobPlatformDataComponent platform={this.props.platform} />
-        <JobDataComponent groups={this.props.platform.groups}
-                          ref="data"/>
+        <JobPlatformDataComponent platform={this.props.platform}/>
+        <JobData groups={this.props.platform.groups}
+                 ref="data"/>
       </tr>
     );
   }
 }
 
 const SpinnerComponent = () => (
-  <span className="fa fa-spinner fa-pulse th-spinner" />
+  <span className="fa fa-spinner fa-pulse th-spinner"/>
 );
 
 const mapJobTableStateToProps = ({ angularProviders, pushes }) => ({
@@ -81,6 +85,10 @@ class JobTableComponent extends React.Component {
       this.pushId,
       this.props.push.revision
     );
+
+    const showDuplicateJobs = this.props.$location.search().duplicate_jobs === 'visible';
+    const expanded = this.props.$location.search().group_state === 'expanded';
+    store.dispatch(actions.pushes.setGlobalGroupStates({ showDuplicateJobs, expanded }));
   }
 
   applyNewJobs() {
@@ -135,7 +143,7 @@ class JobTableComponent extends React.Component {
     );
 
     this.props.$rootScope.$on(
-        this.props.thEvents.changeSelection, (ev, direction, jobNavSelector) => {
+      this.props.thEvents.changeSelection, (ev, direction, jobNavSelector) => {
         this.changeSelectedJob(ev, direction, jobNavSelector);
       }
     );
@@ -168,22 +176,22 @@ class JobTableComponent extends React.Component {
 
   changeSelectedJob(ev, direction, jobNavSelector) {
     if (this.props.$rootScope.selectedJob) {
-     if (this.props.$rootScope.selectedJob.push_id !== this.pushId) {
-       return;
-     }
+      if (this.props.$rootScope.selectedJob.push_id !== this.pushId) {
+        return;
+      }
     }
 
     const jobMap = this.props.ThResultSetStore.getJobMap(this.props.$rootScope.repoName);
     let el, key, jobs, getIndex;
 
     if (direction === 'next') {
-        getIndex = function (idx, jobs) {
-            return idx+1 > _.size(jobs)-1 ? 0: idx+1;
-        };
+      getIndex = function (idx, jobs) {
+        return idx + 1 > _.size(jobs) - 1 ? 0 : idx + 1;
+      };
     } else if (direction === 'previous') {
-        getIndex = function (idx, jobs) {
-            return idx-1 < 0 ? _.size(jobs)-1 : idx-1;
-        };
+      getIndex = function (idx, jobs) {
+        return idx - 1 < 0 ? _.size(jobs) - 1 : idx - 1;
+      };
     }
 
     // Filter the list of possible jobs down to ONLY ones in the .th-view-content
@@ -211,7 +219,7 @@ class JobTableComponent extends React.Component {
     // if there was no new job selected, then ensure that we clear any job that
     // was previously selected.
     if ($(".selected-job").css('display') === 'none') {
-        this.props.$rootScope.closeJob();
+      this.props.$rootScope.closeJob();
     }
   }
 
@@ -238,9 +246,13 @@ class JobTableComponent extends React.Component {
   filterJobs() {
     if (_.isEmpty(this.props.platforms)) return;
     const pushPlatforms = Object.values(this.props.platforms[this.pushId]).reduce((acc, platform) => ({
-        ...acc, [platform.id]: this.filterPlatform(platform)
-      }), {});
+      ...acc, [platform.id]: this.filterPlatform(platform)
+    }), {});
     store.dispatch(pushes.actions.storePlatforms(this.pushId, pushPlatforms));
+  }
+
+  handleJobClick() {
+    console.log("job click in jobTableRowComponent");
   }
 
   filterPlatform(platform) {
@@ -267,14 +279,16 @@ class JobTableComponent extends React.Component {
     const platforms = this.props.platforms[this.pushId] || {};
     return (
       <table id={this.aggregateId} className="table-hover">
-        <tbody>
-          {platforms ? Object.keys(platforms).map((id, i) => (
-            platforms[id].visible &&
-              <JobTableRowComponent platform={ platforms[id] }
-                                    key={ id }
-                                    ref={ id }
-                                    refOrder={ i } />
-            )) : <tr><td><SpinnerComponent /></td></tr> }
+        <tbody onClick={this.handleJobClick}>
+        {platforms ? Object.keys(platforms).map((id, i) => (
+          platforms[id].visible &&
+          <JobTableRowComponent platform={platforms[id]}
+                                key={id}
+                                ref={id}
+                                refOrder={i}/>
+        )) : <tr>
+          <td><SpinnerComponent/></td>
+        </tr>}
         </tbody>
       </table>
     );
@@ -297,11 +311,11 @@ class PushComponent extends React.Component {
     return (
       <Provider store={store}>
         <div className="row result-set clearfix">
-          { this.props.$rootScope.currentRepo &&
-            <RevisionList resultset={this.props.push}
-                          repo={this.props.$rootScope.currentRepo} /> }
-            <span className="job-list job-list-pad col-7">
-              <JobTable push={this.props.push} />
+          {this.props.$rootScope.currentRepo &&
+          <RevisionList resultset={this.props.push}
+                        repo={this.props.$rootScope.currentRepo}/>}
+          <span className="job-list job-list-pad col-7">
+              <JobTable push={this.props.push}/>
             </span>
         </div>
       </Provider>
@@ -310,6 +324,10 @@ class PushComponent extends React.Component {
 }
 
 treeherder.directive('push', ['reactDirective', '$injector', (reactDirective, $injector) =>
-  reactDirective(connect(mapStateToProps)(PushComponent), ['push'], {}, { $injector, store })]);
+  reactDirective(connect(mapStateToProps)(PushComponent), ['push'], {}, {
+    $injector,
+    store
+  })]);
 
 export const JobTable = connect(mapJobTableStateToProps)(JobTableComponent);
+export const JobData = connect(mapJobDataStateToProps)(JobDataComponent);

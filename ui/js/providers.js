@@ -206,8 +206,6 @@ treeherder.provider('thEvents', function () {
 
             deleteRunnableJobs: "delete-runnable-jobs-EVT",
 
-            toggleAllRevisions: "toggle-all-revisions-EVT",
-
             toggleUnclassifiedFailures: "toggle-unclassified-failures-EVT",
 
             changeSelection: "next-previous-job-EVT",

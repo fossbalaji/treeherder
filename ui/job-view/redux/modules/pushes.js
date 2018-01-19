@@ -1,6 +1,7 @@
 export const types = {
   STORE_PLATFORMS: "STORE_PLATFORMS",
   SELECT_JOB: "SELECT_JOB",
+  SET_GLOBAL_GROUP_STATES: "SET_GLOBAL_GROUP_STATES",
 };
 
 export const actions = {
@@ -25,7 +26,13 @@ export const actions = {
     payload: {
       jobId,
     }
-  })
+  }),
+  setGlobalGroupStates: states => ({
+    type: types.SET_GLOBAL_GROUP_STATES,
+    payload: {
+      ...states
+    }
+  }),
 
 };
 
@@ -49,6 +56,11 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         selectedJobId: action.payload.jobId
+      };
+    case types.SET_GLOBAL_GROUP_STATES:
+      return {
+        ...state,
+        ...action.payload
       };
     default:
       return state;
