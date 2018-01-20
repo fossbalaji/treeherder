@@ -8,9 +8,7 @@ class JobGroupComponent extends React.Component {
   constructor(props) {
     super(props);
 
-    // const showDuplicateJobs = this.props.$location.search().duplicate_jobs === 'visible';
     // The group should be expanded initially if the global group state is expanded
-    // let expanded = this.props.$location.search().group_state === 'expanded';
     // It should also be expanded if the currently selected job is in the group
     // $rootScope.selectedJob will not be set on initial load: attempt to find an ID in the querystring:
 
@@ -42,6 +40,7 @@ class JobGroupComponent extends React.Component {
       }
     );
     this.toggleExpanded = this.toggleExpanded.bind(this);
+    // this.items = this.groupButtonsAndCounts();
   }
 
   toggleExpanded() {
@@ -94,22 +93,8 @@ class JobGroupComponent extends React.Component {
   }
 
   render() {
-    const items = this.groupButtonsAndCounts();
-    const buttons = items.buttons.map((job, i) => (
-      <JobButton job={job}
-                 hasGroup={true}
-                 key={job.id}
-                 ref={i}
-                 refOrder={i}/>
-    ));
-    const counts = items.counts.map(countInfo => (
-      <JobCountComponent count={countInfo.count}
-                         // onClick={this.toggleExpanded}
-                         className={`${countInfo.btnClass}-count`}
-                         title={`${countInfo.count} ${countInfo.countText} jobs in group`}
-                         key={countInfo.lastJob.id}
-                         countKey={countInfo.lastJob.id}/>
-    ));
+    this.items = this.groupButtonsAndCounts();
+
     return (
       <span className="platform-group">
             <span className="disabled job-group"
@@ -117,17 +102,30 @@ class JobGroupComponent extends React.Component {
                   data-grkey={this.props.group.grkey}>
               <button className="btn group-symbol"
                       data-ignore-job-clear-on-click={true}
-                      // onClick={this.toggleExpanded}
+                      onClick={this.toggleExpanded}
                       >{this.props.group.symbol}{
                         this.props.group.tier && <span className="small text-muted">[tier {this.props.group.tier}]</span>
                         }</button>
 
               <span className="group-content">
                 <span className="group-job-list">
-                  {buttons}
+                  {this.items.buttons.map((job, i) => (
+                    <JobButton job={job}
+                               hasGroup={true}
+                               key={job.id}
+                               ref={i}
+                               refOrder={i}/>
+                  ))}
                 </span>
                 <span className="group-count-list">
-                  {counts}
+                  {this.items.counts.map(countInfo => (
+                    <JobCountComponent count={countInfo.count}
+                                       onClick={this.toggleExpanded}
+                                       className={`${countInfo.btnClass}-count`}
+                                       title={`${countInfo.count} ${countInfo.countText} jobs in group`}
+                                       key={countInfo.lastJob.id}
+                                       countKey={countInfo.lastJob.id}/>
+                  ))}
                 </span>
               </span>
             </span>

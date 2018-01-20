@@ -2,11 +2,11 @@ import { connect } from "react-redux";
 import { store, actions } from '../redux/store';
 
 export const JobCountComponent = (props) => {
-  const classes = [props.className, 'btn', 'group-btn', 'btn-xs', 'job-group-count', 'filter-shown'];
+  const classes = [props.className, 'btn group-btn btn-xs job-group-count filter-shown'];
   return (
     <button className={classes.join(' ')}
             title={props.title}
-            // onClick={props.onClick}
+            onClick={props.onClick}
             key={props.countKey}>{props.count}</button>
   );
 };
@@ -106,7 +106,7 @@ class JobButtonComponent extends React.Component {
     if (this.props.job.visible) classes.push('filter-shown');
 
     const attributes = {
-      // onMouseDown: this.handleJobClick,
+      onMouseDown: this.handleJobClick,
       className: classes.join(' '),
       'data-jmkey': key,
       'data-ignore-job-clear-on-click': true,

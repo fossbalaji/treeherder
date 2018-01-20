@@ -41,9 +41,6 @@ const initialState = {
   selectedJobId: null,
 };
 
-// As we transition away from Angular and toward React, more and more of these
-// providers won't be needed.  But for now, we use these to reach into Angular
-// to get the shared functionality there.
 export const reducer = (state = initialState, action) => {
   switch (action.type) {
     case types.STORE_PLATFORMS:

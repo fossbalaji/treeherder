@@ -9,6 +9,7 @@ import { platformMap } from "../../js/constants";
 import * as angularProviders from "../redux/modules/angularProviders";
 import * as pushes from "../redux/modules/pushes";
 import * as _ from 'lodash';
+import { react2angular } from 'react2angular';
 
 const JobPlatformDataComponent = (props) => {
   const titleText = `${props.platform.name} ${props.platform.option}`;
@@ -64,10 +65,6 @@ class JobTableRowComponent extends React.PureComponent {
     );
   }
 }
-
-const SpinnerComponent = () => (
-  <span className="fa fa-spinner fa-pulse th-spinner"/>
-);
 
 const mapJobTableStateToProps = ({ angularProviders, pushes }) => ({
   ...angularProviders,
@@ -251,8 +248,8 @@ class JobTableComponent extends React.Component {
     store.dispatch(pushes.actions.storePlatforms(this.pushId, pushPlatforms));
   }
 
-  handleJobClick() {
-    console.log("job click in jobTableRowComponent");
+  handleJobClick(ev) {
+    console.log("job click in jobTableRowComponent", ev);
   }
 
   filterPlatform(platform) {
@@ -276,6 +273,7 @@ class JobTableComponent extends React.Component {
   }
 
   render() {
+    console.log("render JobTableComponent");
     const platforms = this.props.platforms[this.pushId] || {};
     return (
       <table id={this.aggregateId} className="table-hover">
@@ -287,7 +285,7 @@ class JobTableComponent extends React.Component {
                                 ref={id}
                                 refOrder={i}/>
         )) : <tr>
-          <td><SpinnerComponent/></td>
+          <td><span className="fa fa-spinner fa-pulse th-spinner"/></td>
         </tr>}
         </tbody>
       </table>
@@ -308,6 +306,7 @@ class PushComponent extends React.Component {
   }
 
   render() {
+    console.log("render");
     return (
       <Provider store={store}>
         <div className="row result-set clearfix">
@@ -323,11 +322,15 @@ class PushComponent extends React.Component {
   }
 }
 
-treeherder.directive('push', ['reactDirective', '$injector', (reactDirective, $injector) =>
-  reactDirective(connect(mapStateToProps)(PushComponent), ['push'], {}, {
-    $injector,
-    store
-  })]);
+// treeherder.directive('push', ['reactDirective', '$injector', (reactDirective, $injector) =>
+//   reactDirective(connect(mapStateToProps)(PushComponent), ['push'], {}, {
+//     $injector,
+//     store
+//   })]);
+treeherder.constant('store', store);
+treeherder.component('push',
+                     react2angular(connect(mapStateToProps)(PushComponent),
+                                   ['push'], ['$injector', 'store']));
 
 export const JobTable = connect(mapJobTableStateToProps)(JobTableComponent);
 export const JobData = connect(mapJobDataStateToProps)(JobDataComponent);
